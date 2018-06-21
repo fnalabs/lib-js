@@ -1,1 +1,1 @@
-# model-json-js
+# model(JSON)<sup>js</sup>
