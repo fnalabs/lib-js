@@ -1,1 +1,3 @@
-console.log('parking on package name for near future project')
+// expose library
+exports.Model = require('./dist/Model')
+exports.Schema = require('schema-json-js')

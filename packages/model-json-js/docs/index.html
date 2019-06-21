@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Home - model-json-js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Model.html">Model</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Model.html#.errors">errors</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Model.html#.schema">schema</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Model.html#.validate">validate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Model.html#.version">version</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Model.html#toJSON">toJSON</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Schema.html">Schema</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Schema.html#assign">assign</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Schema.html#validate">validate</a></span></li>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>Model(JSON)<sup>js</sup></h1>
+<p><a href="https://www.npmjs.com/package/model-json-js"><img src="https://img.shields.io/npm/v/model-json-js.svg" alt="NPM Version"></a>
+<a href="https://github.com/fnalabs/model-json-js/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
+<a href="https://circleci.com/gh/fnalabs/model-json-js"><img src="https://img.shields.io/circleci/project/github/fnalabs/model-json-js.svg" alt="Build Status"></a>
+<a href="https://codecov.io/gh/fnalabs/model-json-js"><img src="https://img.shields.io/codecov/c/github/fnalabs/model-json-js.svg" alt="Code Coverage"></a>
+<a href="https://david-dm.org/fnalabs/model-json-js"><img src="https://img.shields.io/david/fnalabs/model-json-js.svg" alt="Dependency Status"></a>
+<a href="https://standardjs.com"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="JavaScript Style Guide"></a></p>
+<p>A JavaScript Model class designed to serialize and transfer structured data within the services/apps you build or across networks. It is paired with <a href="https://fnalabs.github.io/schema-json-js/">Schema(JSON)<sup>js</sup></a> to provide structure and validation capabilities to your data model.</p>
+<p>Motivations behind the project:</p>
+<ul>
+<li>implement a data serialization solution for structured JSON data</li>
+<li>backed with JSON Schema definition/validation</li>
+<li>leverage modern JS features</li>
+<li>small and lightweight with only one dependency</li>
+<li>universal support for the latest browsers and Node.js</li>
+<li>no code generation</li>
+</ul>
+<h4>Contents</h4>
+<ul>
+<li><a href="#installing">Installing</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#api">API</a></li>
+<li><a href="#environments">Environments</a></li>
+<li><a href="#future">Future</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#changelog">Changelog</a></li>
+</ul>
+<h2>Installing</h2>
+<p>Install using <code>npm</code>:</p>
+<pre class="prettyprint source lang-sh"><code>$ npm install --save model-json-js
+</code></pre>
+<h2>Examples</h2>
+<p>Below are a few examples on how to use the Model and Schema classes. For the sake of the following examples, here is a sample Schema we'll reference with all the examples.</p>
+<pre class="prettyprint source lang-javascript"><code>// JSON Schema
+const TestSchema = {
+  title: 'Test',
+  $id: 'https://hiveframework.io/api/v1/models/Test',
+  type: 'object',
+  properties: {
+    test: {
+      type: 'string'
+    },
+    another: {
+      type: 'string'
+    }
+  },
+  required: ['test']
+}
+// model metadata
+const meta = {
+  schema: 'https://hiveframework.io/api/v1/models/Test'
+}
+// model FSA
+const testData = {
+  type: 'Test',
+  payload: { test: 'object' },
+  meta
+}
+</code></pre>
+<h4>Initialization:</h4>
+<hr>
+<ul>
+<li>
+<p>An example Model initialized with raw data and schema.</p>
+<pre class="prettyprint source lang-javascript"><code>const model = await new Model(testData, TestSchema)
+</code></pre>
+</li>
+<li>
+<p>An example Model initialized with a cached JSON Schema references defined.</p>
+<pre class="prettyprint source lang-javascript"><code>const testSchema = await new Schema(TestSchema)
+// ...
+const model = await new Model(testData, testSchema)
+</code></pre>
+</li>
+</ul>
+<h2>API</h2>
+<ul>
+<li><a href="https://fnalabs.github.io/model-json-js/Model.html">Model</a></li>
+<li><a href="https://fnalabs.github.io/model-json-js/Schema.html">Schema</a></li>
+</ul>
+<h2>Environments</h2>
+<ul>
+<li>All modern browsers and Node 8+ without polyfills.</li>
+</ul>
+<h2>Future</h2>
+<ul>
+<li>create benchmarks</li>
+<li>create contributing guide</li>
+<li>feature requests via <a href="https://github.com/fnalabs/model-json-js/issues">issues</a></li>
+</ul>
+<h2>Contributing</h2>
+<p>We are currently drafting our contributing guide!</p>
+<h2>Changelog</h2>
+<p>TODO</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a> on Thu Jun 20 2019 22:10:50 GMT-0500 (Central Daylight Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
