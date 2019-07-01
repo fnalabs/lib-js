@@ -76,6 +76,30 @@ const testData = {
   const model = await new Model(testData, testSchema)
   ```
 
+- An example immutable Model initialized with raw data and schema.
+  ```javascript
+  const model = await new Model(testData, TestSchema, { immutable: true })
+  ```
+
+#### Validation:
+---
+- Validate the entire Model.
+  ```javascript
+  const isValid = Model.validate(model)
+  ```
+
+- Validate a single property of the model
+  ```javascript
+  const isValid = Model.validate(model.test, Model.schema(model).test)
+  ```
+
+#### Serialization:
+---
+- Serialize the Model with JSON stringify.
+  ```javascript
+  const json = JSON.stringify(model)
+  ```
+
 ## API
 - [Model](https://fnalabs.github.io/model-json-js/Model.html)
 - [Schema](https://fnalabs.github.io/model-json-js/Schema.html)
@@ -92,7 +116,11 @@ const testData = {
 We are currently drafting our contributing guide!
 
 ## Changelog
-TODO
+#### v0.1.1
+- updated documentation and dependencies
+
+#### v0.1.0
+- initial release
 
 [npm-image]: https://img.shields.io/npm/v/model-json-js.svg
 [npm-url]: https://www.npmjs.com/package/model-json-js
