@@ -140,9 +140,8 @@ class Model {
    * @param {Model} model - The Model instance.
    * @param {Schema} [schema] - An optional JSON Schema instance.
    * @returns {boolean} <code>true</code> if validation is successful, otherwise <code>false</code>.
-   * @async
    */
-  static async validate (model, schema) {
+  static validate (model, schema) {
     return model[SCHEMA].validate(model, schema || model[SCHEMA])
   }
 }
