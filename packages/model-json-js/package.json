@@ -37,7 +37,7 @@
     "npm": ">=5"
   },
   "dependencies": {
-    "schema-json-js": "~0.3.2"
+    "schema-json-js": "~0.4.0"
   },
   "devDependencies": {
     "@babel/cli": "~7.4.4",
@@ -72,7 +72,7 @@
     "proxyquire": "~2.1.0",
     "sinon": "~7.3.2",
     "standard": "~12.0.1",
-    "terser": "~4.0.0",
+    "terser": "~4.0.2",
     "watchify": "~3.11.1"
   },
   "nyc": {

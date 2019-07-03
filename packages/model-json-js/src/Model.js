@@ -169,7 +169,11 @@ export default new Proxy(Model, {
     if (!(data && typeof data === 'object' && !Array.isArray(data))) {
       throw new TypeError('Model data must be an object')
     }
-    if (!await schema.validate(data.payload)) throw new Error(...schema.errors)
+    if (schema.isAsync) {
+      if (!await schema.validate(data.payload)) throw new Error(...schema.errors)
+    } else {
+      if (!schema.validate(data.payload)) throw new Error(...schema.errors)
+    }
 
     return new Model(data, schema, descriptors)
   }

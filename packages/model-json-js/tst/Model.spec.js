@@ -142,6 +142,16 @@ describe('class Model', () => {
         expect(Model.schema(test)).to.be.an.instanceof(Schema)
         expect(await Model.validate(test)).to.be.true()
       })
+
+      it('should create and validate async unsuccessfully', async () => {
+        const testData = { type: 'Test', payload: { test: false }, meta }
+
+        try {
+          await new Model(testData, testSchema)
+        } catch (e) {
+          expect(e.message).to.equal('#type: value is not a string')
+        }
+      })
     })
 
     context('w/ errors', () => {
