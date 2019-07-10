@@ -116,6 +116,10 @@ const testData = {
 We are currently drafting our contributing guide!
 
 ## Changelog
+#### v0.3.0
+- added `version` setter functionality to static function
+- updated documentation
+
 #### v0.2.0
 - added `sync` validation support during Model creation
 - updated documentation and dependencies
