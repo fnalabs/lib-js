@@ -296,5 +296,15 @@ describe('class Model', () => {
       expect(model).to.deep.equal({ id: 'object' })
       expect(Model.version(model)).to.be.undefined()
     })
+
+    it('should set the version if provided and return the new version', async () => {
+      const model = await new Model({ payload: { id: 'object' }, meta: { version: 1 } })
+
+      expect(model).to.deep.equal({ id: 'object' })
+      expect(Model.version(model)).to.equal(1)
+
+      expect(Model.version(model, 2)).to.equal(2)
+      expect(Model.version(model)).to.equal(2)
+    })
   })
 })

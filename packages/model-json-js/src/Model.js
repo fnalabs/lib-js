@@ -2,7 +2,7 @@
 import Schema from 'schema-json-js'
 
 // protected porperties
-export const VERSION = Symbol('optional aggregate version')
+const VERSION = Symbol('optional aggregate version')
 
 // "private" properties
 const DESCRIPTORS = Symbol('hash of recognized descriptors')
@@ -42,7 +42,7 @@ class Model {
     }
 
     // init properties
-    if (Number.isInteger(meta && meta.version)) this[VERSION] = meta.version
+    if (meta && meta.version) Model.version(this, meta.version)
     Object.defineProperties(this, {
       [DESCRIPTORS]: descriptors.immutable ? { value: { immutable: true } } : { value: { ...descriptors } },
       [SCHEMA]: { value: schema }
@@ -111,9 +111,16 @@ class Model {
   /**
    * Static method to get the version associated with the instance of a Model.
    * @param {Model} model - The Model instance.
+   * @param {Number} [version] - An optional version Number to set
    * @returns {Number|undefined} - The version of the Model instance.
    */
-  static version (model) {
+  static version (model, version) {
+    if (Number.isInteger(version)) {
+      typeof model[VERSION] !== 'undefined'
+        ? model[VERSION] = version
+        : Object.defineProperty(model, VERSION, { writable: true, value: version })
+    }
+
     return model[VERSION]
   }
 
@@ -139,7 +146,7 @@ class Model {
    * Static method to manually run the JSON Schema instance's <code>validate</code> method on the specified Model instance. This method will also perform partial schema validation if passed as the second parameter.
    * @param {Model} model - The Model instance.
    * @param {Schema} [schema] - An optional JSON Schema instance.
-   * @returns {boolean} <code>true</code> if validation is successful, otherwise <code>false</code>.
+   * @returns {Boolean} <code>true</code> if validation is successful, otherwise <code>false</code>.
    */
   static validate (model, schema) {
     return model[SCHEMA].validate(model, schema || model[SCHEMA])
