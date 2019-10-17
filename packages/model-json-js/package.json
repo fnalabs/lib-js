@@ -1,6 +1,6 @@
 {
   "name": "model-json-js",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A JavaScript Model class that implements a serializable solution for data modeling on the client and/or server.",
   "main": "index.js",
   "scripts": {

@@ -116,6 +116,9 @@ const testData = {
 We are currently drafting our contributing guide!
 
 ## Changelog
+#### v0.3.1
+- updated dependencies
+
 #### v0.3.0
 - added `version` setter functionality to static function
 - updated documentation
