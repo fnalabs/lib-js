@@ -139,9 +139,6 @@ We are currently drafting our contributing guide!
 [circle-image]: https://img.shields.io/circleci/project/github/fnalabs/model-json-js.svg
 [circle-url]: https://circleci.com/gh/fnalabs/model-json-js
 
-[browserstack-image]: https://www.browserstack.com/automate/badge.svg?badge_key=eDlQNTJyWmtKUGY4dUVkUE1KU0xYdlhsWEQ1RmhtUVhCb285NWpla2picz0tLVBUZ0orditWQXNFWS9tNnNPNUVQREE9PQ==--7be9058ed16408dc5a4ee811336e7c48e21631d7
-[browserstack-url]: https://www.browserstack.com/automate/public-build/eDlQNTJyWmtKUGY4dUVkUE1KU0xYdlhsWEQ1RmhtUVhCb285NWpla2picz0tLVBUZ0orditWQXNFWS9tNnNPNUVQREE9PQ==--7be9058ed16408dc5a4ee811336e7c48e21631d7
-
 [codecov-image]: https://img.shields.io/codecov/c/github/fnalabs/model-json-js.svg
 [codecov-url]: https://codecov.io/gh/fnalabs/model-json-js
 
