@@ -36,7 +36,7 @@
     "npm": ">=5"
   },
   "dependencies": {
-    "schema-json-js": "~0.4.0"
+    "schema-json-js": "~0.4.1"
   },
   "devDependencies": {
     "@babel/cli": "~7.6.4",
@@ -110,9 +110,7 @@
   },
   "standard": {
     "ignore": [
-      "docs/",
-      "tst/benchmark/",
-      "JSON-Schema-Test-Suite/"
+      "docs/"
     ]
   }
 }
