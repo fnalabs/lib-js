@@ -2,7 +2,6 @@
 
 [![NPM Version][npm-image]][npm-url]
 [![License][license-image]][license-url]
-[![Build Status][circle-image]][circle-url]
 [![Code Coverage][codecov-image]][codecov-url]
 [![Dependency Status][depstat-image]][depstat-url]
 [![JavaScript Style Guide][style-image]][style-url]
@@ -138,9 +137,6 @@ We are currently drafting our contributing guide!
 
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
 [license-url]: https://github.com/fnalabs/model-json-js/blob/master/LICENSE
-
-[circle-image]: https://img.shields.io/circleci/project/github/fnalabs/model-json-js.svg
-[circle-url]: https://circleci.com/gh/fnalabs/model-json-js
 
 [codecov-image]: https://img.shields.io/codecov/c/github/fnalabs/model-json-js.svg
 [codecov-url]: https://codecov.io/gh/fnalabs/model-json-js
