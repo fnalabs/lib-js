@@ -3,7 +3,7 @@ version: 2.0
 jobs:
   checkout_code:
     docker:
-      - image: circleci/node:10.16.3
+      - image: circleci/node:12.16.1
     working_directory: ~/model-json-js
     steps:
       - checkout
@@ -15,13 +15,13 @@ jobs:
 
   install_dependencies:
     docker:
-      - image: circleci/node:10.16.3
+      - image: circleci/node:12.16.1
     working_directory: ~/model-json-js
     steps:
       - restore_cache:
           keys:
             - repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-      - run: npm install --no-optional
+      - run: npm ci
       - save_cache:
           key: dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -29,7 +29,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:10.16.3
+      - image: circleci/node:12.16.1
     working_directory: ~/model-json-js
     steps:
       - restore_cache:
@@ -49,24 +49,9 @@ jobs:
       - store_artifacts:
           path: ~/model-json-js/coverage.lcov
 
-  browserstack:
-    docker:
-      - image: circleci/node:10.16.3
-    working_directory: ~/model-json-js
-    steps:
-      - restore_cache:
-          keys:
-            - repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          keys:
-            - dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Run BrowserStack tests
-          command: npm run browserstack
-
   build:
     docker:
-      - image: circleci/node:10.16.3
+      - image: circleci/node:12.16.1
     working_directory: ~/model-json-js
     steps:
       - restore_cache:
@@ -90,9 +75,6 @@ workflows:
       - test:
           requires:
             - install_dependencies
-      # - browserstack:
-      #     requires:
-      #       - test
       - build:
           requires:
             - test
