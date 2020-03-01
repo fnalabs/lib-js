@@ -115,6 +115,10 @@ const testData = {
 We are currently drafting our contributing guide!
 
 ## Changelog
+#### v1.0.1
+- modified build script to ECMA 9
+- updated dependencies
+
 #### v1.0.0
 - moving out of development phase for production use
 - removing build status badge since CircleCI is only used for PR temporary branches
