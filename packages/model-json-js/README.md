@@ -99,7 +99,7 @@ const testData = {
   const json = JSON.stringify(model)
   ```
 
-## API
+## [API](https://fnalabs.github.io/schema-json-js/)
 - [Model](https://fnalabs.github.io/model-json-js/Model.html)
 - [Schema](https://fnalabs.github.io/model-json-js/Schema.html)
 
@@ -114,31 +114,7 @@ const testData = {
 ## Contributing
 We are currently drafting our contributing guide!
 
-## Changelog
-#### v1.0.1
-- modified build script to ECMA 9
-- updated dependencies
-
-#### v1.0.0
-- moving out of development phase for production use
-- removing build status badge since CircleCI is only used for PR temporary branches
-
-#### v0.3.1
-- updated dependencies
-
-#### v0.3.0
-- added `version` setter functionality to static function
-- updated documentation
-
-#### v0.2.0
-- added `sync` validation support during Model creation
-- updated documentation and dependencies
-
-#### v0.1.1
-- updated documentation and dependencies
-
-#### v0.1.0
-- initial release
+## [Changelog](https://github.com/fnalabs/model-json-js/releases)
 
 [npm-image]: https://img.shields.io/npm/v/model-json-js.svg
 [npm-url]: https://www.npmjs.com/package/model-json-js
