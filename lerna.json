@@ -1,0 +1,16 @@
+{
+  "command": {
+    "publish": {
+      "ignoreChanges": [
+        "**/*.md",
+        "**/tst/**"
+      ]
+    }
+  },
+  "packages": [
+    "packages/*"
+  ],
+  "version": "independent",
+  "npmClient": "npm",
+  "useWorkspaces": false
+}
