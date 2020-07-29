@@ -1,0 +1,23 @@
+flags:
+  model-json-js:
+    paths: 
+      - packages/model-json-js/src/
+  schema-json-js:
+    paths:
+      - packages/schema-json-js/src/
+
+coverage:
+  status:
+    project:
+      default:
+        target: 75%
+        threshold: 0%
+        flags:
+          - model-json-js
+          - schema-json-js
+      model-json-js:
+        flags:
+          - model-json-js
+      schema-json-js:
+        flags:
+          - schema-json-js
