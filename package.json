@@ -8,6 +8,8 @@
     "coverage": "del coverage && mkdir coverage && lerna run coverage && codecov -f coverage/schema-json-js/coverage.lcov -F schema-json-js && codecov -f coverage/model-json-js/coverage.lcov -F model-json-js",
     "dev:model": "lerna run dev --scope model-json-js --stream",
     "dev:schema": "lerna run dev --scope schema-json-js --stream",
+    "document": "lerna run document",
+    "init": "npx lerna bootstrap",
     "link": "lerna link",
     "link:convert": "lerna link convert",
     "test:model": "lerna run test --scope model-json-js",

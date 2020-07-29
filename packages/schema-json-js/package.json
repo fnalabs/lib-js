@@ -21,7 +21,7 @@
     "coverage": "mkdir ../../coverage/schema-json-js && cross-env NODE_ENV=test nyc report --reporter=text-lcov > ../../coverage/schema-json-js/coverage.lcov",
     "dev": "nodemon -e js,json -w src -x \"npm run build\" & nodemon -e js -w tst -x \"npm test\" & karma start",
     "document": "jsdoc --configure .jsdoc.json --verbose",
-    "postdocument": "sed -i 's/Documentation/schema-json-js/g' docs/index.html docs/Schema.html",
+    "postdocument": "sed -i 's/Documentation/schema-json-js/g' ../../../schema-json-js/docs/index.html ../../../schema-json-js/docs/Schema.html",
     "fix": "standard --fix",
     "release": "npm test && npm run build",
     "postrelease": "npm run document",

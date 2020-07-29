@@ -17,12 +17,12 @@
     "showInheritedInNav": true
   },
   "opts": {
-    "destination": "./docs",
+    "destination": "../../../schema-json-js/docs",
     "encoding": "utf8",
     "pedantic": true,
     "private": false,
     "readme": "./README.md",
     "recurse": true,
-    "template": "./node_modules/minami"
+    "template": "../../node_modules/minami"
   }
 }
