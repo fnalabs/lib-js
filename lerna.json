@@ -1,5 +1,8 @@
 {
   "command": {
+    "bootstrap": {
+      "npmClientArgs": ["--no-optional"]
+    },
     "publish": {
       "ignoreChanges": [
         "**/*.md",
