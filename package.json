@@ -1,7 +1,62 @@
 {
-  "name": "root",
+  "name": "lib-js",
   "private": true,
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "build:model": "lerna run build --scope model-json-js",
+    "build:schema": "lerna run build --scope schema-json-js",
+    "coverage": "del coverage && mkdir coverage && lerna run coverage && codecov -f coverage/schema-json-js/coverage.lcov -F schema-json-js && codecov -f coverage/model-json-js/coverage.lcov -F model-json-js",
+    "dev:model": "lerna run dev --scope model-json-js --stream",
+    "dev:schema": "lerna run dev --scope schema-json-js --stream",
+    "link": "lerna link",
+    "link:convert": "lerna link convert",
+    "test:model": "lerna run test --scope model-json-js",
+    "test:schema": "lerna run test --scope schema-json-js",
+    "test:schema:all": "lerna run test:all --scope schema-json-js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fnalabs/lib-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fnalabs/lib-js/issues"
+  },
+  "dependencies": {
+    "model-json-js": "file:packages/model-json-js",
+    "schema-json-js": "file:packages/schema-json-js"
+  },
   "devDependencies": {
-    "lerna": "^3.22.1"
+    "@babel/cli": "7.10.5",
+    "@babel/core": "7.10.5",
+    "@babel/plugin-transform-modules-commonjs": "7.10.4",
+    "@babel/register": "7.10.5",
+    "babel-eslint": "10.1.0",
+    "babel-plugin-add-module-exports": "1.0.2",
+    "babel-plugin-istanbul": "6.0.0",
+    "babelify": "10.0.0",
+    "browserify": "16.5.1",
+    "chai": "4.2.0",
+    "chai-as-promised": "7.1.1",
+    "codecov": "3.7.2",
+    "cross-env": "7.0.2",
+    "del-cli": "3.0.1",
+    "dirty-chai": "2.0.1",
+    "jsdoc": "3.6.5",
+    "karma": "5.1.0",
+    "karma-browserify": "7.0.0",
+    "karma-chrome-launcher": "3.1.0",
+    "karma-firefox-launcher": "1.3.0",
+    "karma-mocha": "2.0.1",
+    "lerna": "3.22.1",
+    "minami": "1.2.3",
+    "mocha": "8.0.1",
+    "nock": "13.0.3",
+    "nodemon": "2.0.4",
+    "nyc": "15.1.0",
+    "proxyquire": "2.1.3",
+    "sinon": "9.0.2",
+    "standard": "14.3.4",
+    "terser": "4.8.0",
+    "watchify": "3.11.1"
   }
 }

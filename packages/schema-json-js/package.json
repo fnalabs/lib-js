@@ -17,27 +17,27 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "del dist",
-    "build": "cross-env NODE_ENV=production bash ./bin/build",
-    "coverage": "cross-env NODE_ENV=test nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "build": "cross-env NODE_ENV=production bash ../../bin/build",
+    "coverage": "mkdir ../../coverage/schema-json-js && cross-env NODE_ENV=test nyc report --reporter=text-lcov > ../../coverage/schema-json-js/coverage.lcov",
     "dev": "nodemon -e js,json -w src -x \"npm run build\" & nodemon -e js -w tst -x \"npm test\" & karma start",
     "document": "jsdoc --configure .jsdoc.json --verbose",
     "postdocument": "sed -i 's/Documentation/schema-json-js/g' docs/index.html docs/Schema.html",
     "fix": "standard --fix",
-    "release": "npm run test:all && npm test && npm run build",
+    "release": "npm test && npm run build",
     "postrelease": "npm run document",
     "pretest": "del coverage coverage.lcov .nyc_output",
     "test": "standard",
     "posttest": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --recursive --exit 'tst/unit/**/*.spec.js'",
     "test:all": "cross-env NODE_ENV=production mocha --require '@babel/register' --exit 'tst/**/*.spec.js'",
-    "version": "npm run release && git add --all",
-    "postversion": "git push && git push --tags && npm publish"
+    "version": "npm run release"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fnalabs/schema-json-js.git"
+    "url": "git+https://github.com/fnalabs/lib-js.git",
+    "directory": "packages/schema-json-js"
   },
   "bugs": {
-    "url": "https://github.com/fnalabs/schema-json-js/issues"
+    "url": "https://github.com/fnalabs/lib-js/issues"
   },
   "homepage": "https://fnalabs.github.io/schema-json-js/",
   "author": "Adam Eilers",
@@ -45,40 +45,6 @@
   "engines": {
     "node": ">=10",
     "npm": ">=6"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "@babel/cli": "~7.8.4",
-    "@babel/core": "~7.9.0",
-    "@babel/plugin-transform-modules-commonjs": "~7.9.0",
-    "@babel/register": "~7.9.0",
-    "babel-eslint": "~10.1.0",
-    "babel-plugin-add-module-exports": "~1.0.2",
-    "babel-plugin-istanbul": "~6.0.0",
-    "babelify": "~10.0.0",
-    "browserify": "~16.5.0",
-    "chai": "~4.2.0",
-    "chai-as-promised": "~7.1.1",
-    "codecov": "~3.6.5",
-    "cross-env": "~7.0.2",
-    "del-cli": "~3.0.0",
-    "dirty-chai": "~2.0.1",
-    "jsdoc": "~3.6.3",
-    "karma": "~4.4.1",
-    "karma-browserify": "~7.0.0",
-    "karma-chrome-launcher": "~3.1.0",
-    "karma-firefox-launcher": "~1.3.0",
-    "karma-mocha": "~1.3.0",
-    "minami": "~1.2.3",
-    "mocha": "~7.1.1",
-    "nock": "~12.0.3",
-    "nodemon": "~2.0.2",
-    "nyc": "~15.0.0",
-    "proxyquire": "~2.1.3",
-    "sinon": "~9.0.1",
-    "standard": "~14.3.3",
-    "terser": "~4.6.7",
-    "watchify": "~3.11.1"
   },
   "nyc": {
     "exclude": [
@@ -116,6 +82,7 @@
   },
   "standard": {
     "ignore": [
+      "dist/",
       "docs/",
       "tst/benchmark/",
       "JSON-Schema-Test-Suite/"
