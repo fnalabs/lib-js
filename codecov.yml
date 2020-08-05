@@ -8,17 +8,15 @@ flags:
 
 coverage:
   status:
+    changes: off
+    patch: off
     project:
       default:
-        target: 75%
+        target: 90%
         threshold: 0%
       model-json-js:
-        target: 75%
-        threshold: 0%
         flags:
           - model-json-js
       schema-json-js:
-        target: 75%
-        threshold: 0%
         flags:
           - schema-json-js
