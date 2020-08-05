@@ -127,7 +127,7 @@ const testData = {
 
 ## Contributing
 
-We are currently drafting our contributing guide!
+We are currently drafting our contributing guide in the new [monorepo](https://github.com/fnalabs/lib-js)!
 
 ## [Changelog](https://github.com/fnalabs/lib-js/releases)
 
@@ -137,8 +137,8 @@ We are currently drafting our contributing guide!
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
 [license-url]: https://github.com/fnalabs/lib-js/blob/master/packages/model-json-js/LICENSE
 
-[codecov-image]: https://img.shields.io/codecov/c/github/fnalabs/model-json-js.svg
-[codecov-url]: https://codecov.io/gh/fnalabs/model-json-js
+[codecov-image]: https://img.shields.io/codecov/c/github/fnalabs/lib-js.svg
+[codecov-url]: https://codecov.io/gh/fnalabs/lib-js
 
 [style-image]: https://img.shields.io/badge/code_style-standard-brightgreen.svg
 [style-url]: https://standardjs.com

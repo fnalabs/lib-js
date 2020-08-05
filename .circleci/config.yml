@@ -67,7 +67,7 @@ jobs:
             - lib-js-build-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Run lint and unit tests
-          command: npm run test:schema && npm run test:schema:all && npm run test:model
+          command: npm run test:schema:all && npm run test:schema && npm run test:model
       - run:
           name: Run coverage report
           command: npm run coverage
