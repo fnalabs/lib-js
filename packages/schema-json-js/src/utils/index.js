@@ -20,28 +20,27 @@ async function nodeFetch (url, secure) {
 
       let error
       if (statusCode !== 200) {
-        error = new Error('Request Failed.\n' +
-                          `Status Code: ${statusCode}`)
+        error = new Error(`Request Failed.\nStatus Code: ${statusCode}`)
       } else if (!contentTypeRegex.test(contentType)) {
-        error = new Error('Invalid content-type.\n' +
-                          `Expected application/json but received ${contentType}`)
+        error = new Error(`Invalid content-type.\nExpected application/json but received ${contentType}`)
       }
+
       if (error) {
         // consume response data to free up memory
         response.resume()
         reject(error)
+      } else {
+        let rawData = ''
+        response.setEncoding('utf8')
+        response.on('data', (chunk) => (rawData += chunk))
+        response.on('end', () => {
+          try {
+            resolve(JSON.parse(rawData))
+          } catch (e) {
+            reject(e)
+          }
+        })
       }
-
-      let rawData = ''
-      response.setEncoding('utf8')
-      response.on('data', (chunk) => (rawData += chunk))
-      response.on('end', () => {
-        try {
-          resolve(JSON.parse(rawData))
-        } catch (e) {
-          reject(e)
-        }
-      })
     }).on('error', (e) => reject(e))
   })
 }
