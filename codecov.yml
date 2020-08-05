@@ -12,12 +12,13 @@ coverage:
       default:
         target: 75%
         threshold: 0%
-        flags:
-          - model-json-js
-          - schema-json-js
       model-json-js:
+        target: 75%
+        threshold: 0%
         flags:
           - model-json-js
       schema-json-js:
+        target: 75%
+        threshold: 0%
         flags:
           - schema-json-js
