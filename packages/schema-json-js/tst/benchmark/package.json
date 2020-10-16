@@ -42,7 +42,7 @@
     "karma-browserstack-launcher": "~1.5.1",
     "karma-chrome-launcher": "~3.1.0",
     "karma-firefox-launcher": "~1.2.0",
-    "lodash": "~4.17.15",
+    "lodash": "~4.17.19",
     "mustache": "~3.1.0",
     "standard": "~14.3.1",
     "watchify": "~3.11.1"
