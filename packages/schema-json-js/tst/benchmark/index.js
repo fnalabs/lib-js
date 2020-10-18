@@ -308,5 +308,5 @@ function saveResults (fileName, templateName) {
   await runOne('standard data', standardData, standardSchema, true)
   await runOne('advanced data', advancedData, advancedSchema, true)
 
-  saveResults(`../../docs/${process.env.TEST_PLATFORM}.${process.env.TEST_TYPE}.html`, 'results.mustache')
+  saveResults(`../../../../../schema-json-js/docs/${process.env.TEST_PLATFORM}.${process.env.TEST_TYPE}.html`, 'results.mustache')
 })()
