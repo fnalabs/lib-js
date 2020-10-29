@@ -50,8 +50,8 @@ class Schema {
 
     isAsync
       ? Object.defineProperty(this, 'validate', {
-        value: async (data, schema) => this[VALIDATE](data, schema)
-      })
+          value: async (data, schema) => this[VALIDATE](data, schema)
+        })
       : Object.defineProperty(this, 'validate', {
         value: (data, schema) => this[VALIDATE](data, schema)
       })
@@ -192,13 +192,13 @@ class Schema {
           value = list.length === 1
             ? list.pop()
             : (data, schema) => {
-              let i = list.length
-              let error
-              while (i--) {
-                error = list[i](data, schema)
-                if (error) return error
+                let i = list.length
+                let error
+                while (i--) {
+                  error = list[i](data, schema)
+                  if (error) return error
+                }
               }
-            }
 
           Object.defineProperty(source, OPTIMIZED, { value })
           Object.freeze(source[OPTIMIZED])
@@ -330,13 +330,13 @@ class Schema {
     return list.length === 1
       ? list.pop()
       : (data, schema) => {
-        let i = list.length
-        let error
-        while (i--) {
-          error = list[i](data, schema)
-          if (error) return error
+          let i = list.length
+          let error
+          while (i--) {
+            error = list[i](data, schema)
+            if (error) return error
+          }
         }
-      }
   }
 
   /*
