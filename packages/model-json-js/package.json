@@ -73,7 +73,8 @@
   "standard": {
     "ignore": [
       "dist/",
-      "docs/"
+      "docs/",
+      "tmp*"
     ]
   }
 }

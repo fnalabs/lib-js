@@ -84,6 +84,7 @@
     "ignore": [
       "dist/",
       "docs/",
+      "tmp*",
       "tst/benchmark/",
       "JSON-Schema-Test-Suite/"
     ]
