@@ -5,10 +5,8 @@ src
 tmp*
 tst
 .*
-package.tar.gz
 karma.*
 babel.config.json
-README.md
 
 # Logs
 logs

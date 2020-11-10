@@ -21,9 +21,9 @@ export default class AssertNumber {
     const assertion = type === 'integer' ? isInteger : isNumber
 
     // perform remaining validations defined in schema
-    if (!isUndefined(maximum)) AssertNumber[ASSERT_MAX](maximum, exclusiveMaximum, assertion)
-    if (!isUndefined(minimum)) AssertNumber[ASSERT_MIN](minimum, exclusiveMinimum, assertion)
-    if (!isUndefined(multipleOf)) AssertNumber[ASSERT_MULTIPLE](multipleOf, assertion)
+    if (!isUndefined(maximum)) AssertNumber[ASSERT_MAX](assertion, maximum, exclusiveMaximum)
+    if (!isUndefined(minimum)) AssertNumber[ASSERT_MIN](assertion, minimum, exclusiveMinimum)
+    if (!isUndefined(multipleOf)) AssertNumber[ASSERT_MULTIPLE](assertion, multipleOf)
 
     // return validations based on defined keywords
     if (isNumber(maximum) || isNumber(exclusiveMaximum) || isNumber(minimum) || isNumber(exclusiveMinimum) || isNumber(multipleOf)) {
@@ -56,7 +56,7 @@ export default class AssertNumber {
     return []
   }
 
-  static [ASSERT_MAX] (maximum, exclusive = false, assertion) {
+  static [ASSERT_MAX] (assertion, maximum, exclusive = false) {
     if (isNumber(exclusive)) exclusive = false
 
     if (!assertion(maximum)) {
@@ -67,7 +67,7 @@ export default class AssertNumber {
     }
   }
 
-  static [ASSERT_MIN] (minimum, exclusive = false, assertion) {
+  static [ASSERT_MIN] (assertion, minimum, exclusive = false) {
     if (isNumber(exclusive)) exclusive = false
 
     if (!assertion(minimum)) {
@@ -78,7 +78,7 @@ export default class AssertNumber {
     }
   }
 
-  static [ASSERT_MULTIPLE] (multipleOf, assertion) {
+  static [ASSERT_MULTIPLE] (assertion, multipleOf) {
     if (!assertion(multipleOf)) {
       throw new TypeError('#multipleOf: keyword is not the right type')
     }
