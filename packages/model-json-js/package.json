@@ -2,6 +2,14 @@
   "name": "model-json-js",
   "version": "1.0.5",
   "description": "A JavaScript Model class that implements a serializable solution for data modeling on the client and/or server.",
+  "keywords": [
+    "json",
+    "JSON",
+    "jsonschema",
+    "json-schema",
+    "schema",
+    "serialization"
+  ],
   "main": "index.js",
   "scripts": {
     "prebuild": "del dist",
