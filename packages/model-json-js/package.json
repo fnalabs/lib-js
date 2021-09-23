@@ -11,19 +11,22 @@
     "serialization"
   ],
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "prebuild": "del dist",
     "build": "cross-env NODE_ENV=production bash ../../bin/build",
     "coverage": "mkdir ../../coverage/model-json-js && cross-env NODE_ENV=test nyc report --reporter=text-lcov > ../../coverage/model-json-js/coverage.lcov",
-    "dev": "nodemon -e js,json -w src -x \"npm run build\" & nodemon -e js -w tst -x \"npm test\" & karma start",
+    "dev": "npm run tsc:watch",
     "document": "jsdoc --configure .jsdoc.json --verbose",
     "postdocument": "sed -i 's/Documentation/model-json-js/g' ../../../model-json-js/docs/index.html ../../../model-json-js/docs/Model.html ../../../model-json-js/docs/Schema.html",
-    "fix": "standard --fix",
-    "release": "npm test && npm run build",
+    "fix": "ts-standard --fix",
+    "release": "npm test && npm run tsc",
     "postrelease": "npm run document",
     "pretest": "del coverage coverage.lcov .nyc_output",
-    "test": "standard",
+    "test": "ts-standard",
     "posttest": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --recursive --exit 'tst/**/*.spec.js'",
+    "tsc": "tsc",
+    "tsc:watch": "tsc --watch",
     "version": "npm run release"
   },
   "repository": {
@@ -44,43 +47,10 @@
   "dependencies": {
     "schema-json-js": "file:../schema-json-js"
   },
-  "nyc": {
-    "exclude": [
-      "tst"
-    ],
-    "check-coverage": true,
-    "per-file": true,
-    "lines": 80,
-    "statements": 80,
-    "functions": 75,
-    "branches": 80,
-    "watermarks": {
-      "lines": [
-        80,
-        90
-      ],
-      "functions": [
-        75,
-        90
-      ],
-      "branches": [
-        80,
-        90
-      ],
-      "statements": [
-        80,
-        90
-      ]
-    },
-    "require": [
-      "@babel/register"
-    ],
-    "sourceMap": false,
-    "instrument": false
-  },
-  "standard": {
+  "ts-standard": {
     "ignore": [
       "dist/",
+      "lib/",
       "docs/",
       "tmp*"
     ]

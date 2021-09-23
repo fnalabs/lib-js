@@ -23,10 +23,10 @@
     "z-schema": "latest"
   },
   "devDependencies": {
-    "@babel/cli": "~7.12.10",
-    "@babel/core": "~7.12.10",
-    "@babel/plugin-transform-modules-commonjs": "~7.12.1",
-    "@babel/register": "~7.12.10",
+    "@babel/cli": "~7.13.14",
+    "@babel/core": "~7.13.14",
+    "@babel/plugin-transform-modules-commonjs": "~7.13.8",
+    "@babel/register": "~7.13.14",
     "babel-plugin-add-module-exports": "~1.0.4",
     "babel-plugin-istanbul": "~6.0.0",
     "babelify": "~10.0.0",
@@ -36,13 +36,13 @@
     "cross-env": "~7.0.3",
     "del-cli": "~3.0.1",
     "envify": "~4.1.0",
-    "karma": "~5.2.3",
+    "karma": "~6.3.2",
     "karma-browserify": "~8.0.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-firefox-launcher": "~2.1.0",
-    "lodash": "~4.17.20",
-    "mustache": "~4.1.0",
+    "lodash": "~4.17.21",
+    "mustache": "~4.2.0",
     "standard": "~16.0.3",
-    "watchify": "~3.11.1"
+    "watchify": "~4.0.0"
   }
 }

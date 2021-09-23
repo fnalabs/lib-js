@@ -1,5 +1,6 @@
 # Project specific
 dist
+lib
 tmp*
 package.tar.gz
 
