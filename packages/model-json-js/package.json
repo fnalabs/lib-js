@@ -13,17 +13,19 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "del dist",
-    "build": "cross-env NODE_ENV=production bash ../../bin/build",
-    "coverage": "mkdir ../../coverage/model-json-js && cross-env NODE_ENV=test nyc report --reporter=text-lcov > ../../coverage/model-json-js/coverage.lcov",
-    "dev": "nodemon -e js,json -w src -x \"npm run build\" & nodemon -e js -w tst -x \"npm test\" & karma start",
+    "build": "tsc --build ../../tsconfig.json",
+    "build:watch": "tsc --build ../../tsconfig.json --watch",
+    "dev": "npm run build:watch & npm run test:watch",
     "document": "jsdoc --configure .jsdoc.json --verbose",
     "postdocument": "sed -i 's/Documentation/model-json-js/g' ../../../model-json-js/docs/index.html ../../../model-json-js/docs/Model.html ../../../model-json-js/docs/Schema.html",
-    "fix": "standard --fix",
+    "fix": "ts-standard --fix -p ../../tsconfig.json",
+    "lint": "ts-standard -p ../../tsconfig.json",
     "release": "npm test && npm run build",
     "postrelease": "npm run document",
-    "pretest": "del coverage coverage.lcov .nyc_output",
-    "test": "standard",
-    "posttest": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --recursive --exit 'tst/**/*.spec.js'",
+    "pretest": "del coverage",
+    "test": "ts-standard",
+    "posttest": "cross-env NODE_ENV=test jest --env=node --colors --coverage 'tst'",
+    "test:watch": "cross-env NODE_ENV=test jest --env=node --colors --coverage --watch 'tst'",
     "version": "npm run release"
   },
   "repository": {
@@ -41,48 +43,39 @@
     "node": ">=10",
     "npm": ">=6"
   },
-  "dependencies": {
-    "schema-json-js": "file:../schema-json-js"
+  "devDependencies": {
+    "@types/jest": "29.5.1",
+    "cross-env": "7.0.3",
+    "del-cli": "5.0.0",
+    "jest": "29.5.0",
+    "ts-jest": "29.1.0",
+    "ts-standard": "12.0.2",
+    "typescript": "5.0.4"
   },
-  "nyc": {
-    "exclude": [
-      "tst"
+  "jest": {
+    "preset": "ts-jest/presets/default-esm",
+    "collectCoverageFrom": [
+      "src/**/*.{ts,js}",
+      "!src/config.ts",
+      "!src/**/*.d.ts",
+      "!tst/**/*.ts"
     ],
-    "check-coverage": true,
-    "per-file": true,
-    "lines": 80,
-    "statements": 80,
-    "functions": 75,
-    "branches": 80,
-    "watermarks": {
-      "lines": [
-        80,
-        90
-      ],
-      "functions": [
-        75,
-        90
-      ],
-      "branches": [
-        80,
-        90
-      ],
-      "statements": [
-        80,
-        90
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        "tsconfig.json"
       ]
-    },
-    "require": [
-      "@babel/register"
-    ],
-    "sourceMap": false,
-    "instrument": false
+    }
   },
-  "standard": {
+  "ts-standard": {
     "ignore": [
       "dist/",
       "docs/",
+      "lib/",
       "tmp*"
     ]
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }
