@@ -1,26 +1,29 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+import { ValidationFunc } from '../../types'
 import {
   OPTIMIZED, assertSizeMax, assertSizeMin,
   isArray, isBoolean, isObject, isSchema, isUndefined
 } from '../types'
 
-// private methods
-const ASSERT_CONTAINS = Symbol('validates array contains item')
-const ASSERT_ITEMS = Symbol('validates array items')
-
 export default class AssertArray {
-  constructor () {
-    return AssertArray
+  private static instance: AssertArray
+
+  private constructor () {}
+
+  static getInstance (): AssertArray {
+    if (isUndefined(AssertArray.instance)) AssertArray.instance = new AssertArray()
+    return AssertArray.instance
   }
 
   /*
    * array assertions
    */
-  static optimize (schema) {
+  optimize (schema): ValidationFunc[] {
     const { type, items, additionalItems, contains, maxItems, minItems, uniqueItems } = schema
 
     // assert and optimize element-processing keywords in schema
-    if (!isUndefined(items)) AssertArray[ASSERT_ITEMS](schema)
-    if (!isUndefined(contains)) AssertArray[ASSERT_CONTAINS](contains)
+    if (!isUndefined(items)) AssertArray.ASSERT_ITEMS(schema)
+    if (!isUndefined(contains)) AssertArray.ASSERT_CONTAINS(contains)
 
     // assert and optimize post-processing keywords in schema
     if (!isUndefined(maxItems)) assertSizeMax(maxItems, 'maxItems')
@@ -29,7 +32,7 @@ export default class AssertArray {
     // return validations based on defined keywords that require iterative validation
     if (items || items === false || additionalItems || contains || contains === false || uniqueItems) {
       return [(value, ref) => {
-        if (!isArray(value)) {
+        if (!Array.isArray(value)) {
           if (ref.type === 'array') return '#type: value is not an array'
           return
         }
@@ -49,14 +52,14 @@ export default class AssertArray {
 
         for (let index = 0; index < length; index++) {
           if (ref.uniqueItems) {
-            value[index] && typeof value[index] === 'object'
+            typeof value[index] === 'object' && value[index] !== null
               ? unique.add(JSON.stringify(value[index]))
               : unique.add(value[index])
           }
 
           // asserts [items, additionalItems]
-          if (ref.items || ref.items === false) {
-            if (isArray(ref.items)) {
+          if (ref.items || ref.items === false) { // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
+            if (Array.isArray(ref.items)) {
               if (index < ref.items.length) {
                 if (ref.items[index] === false) {
                   return '#items: \'false\' JSON Schema invalidates all values'
@@ -64,7 +67,7 @@ export default class AssertArray {
                   error = ref.items[index][OPTIMIZED](value[index], ref.items[index])
                   if (error) return error
                 }
-              } else if (ref.additionalItems || ref.additionalItems === false) {
+              } else if (ref.additionalItems || ref.additionalItems === false) { // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
                 if (ref.additionalItems === false) {
                   return `#additionalItems: '${index}' additional items not allowed`
                 } else if (ref.additionalItems[OPTIMIZED]) {
@@ -81,7 +84,7 @@ export default class AssertArray {
           }
 
           // asserts [contains]
-          if (ref.contains || ref.contains === false) {
+          if (ref.contains || ref.contains === false) { // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
             if (!containsFlag) {
               if (ref.contains === false) {
                 error = '#contains: \'false\' JSON Schema invalidates all values'
@@ -100,11 +103,11 @@ export default class AssertArray {
         }
 
         // handling empty array edge case if `contains` keyword is defined
-        if (length === 0 && (ref.contains || ref.contains === false)) {
+        if (length === 0 && (ref.contains || ref.contains === false)) { // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
           return '#contains: value does not contain element matching the schema'
         }
 
-        // asserts [uniqueItems, maxItems, minItems]
+        // asserts [uniqueItems]
         if (ref.uniqueItems && length !== unique.size) {
           return '#uniqueItems: value does not contain unique items'
         }
@@ -112,33 +115,33 @@ export default class AssertArray {
     // return validations based on defined keywords that require only array validation
     } else if (maxItems || minItems) {
       return [(value, ref) => {
-        if (!isArray(value)) {
+        if (!Array.isArray(value)) {
           if (ref.type === 'array') return '#type: value is not an array'
           return
         }
-        if (typeof ref.maxItems === 'number' && value.length > ref.maxItems) {
+        if (ref.maxItems && value.length > ref.maxItems) {
           return '#maxItems: value maximum exceeded'
         }
-        if (typeof ref.minItems === 'number' && value.length < ref.minItems) {
+        if (ref.minItems && value.length < ref.minItems) {
           return '#minItems: value minimum not met'
         }
       }]
     // return validations based on only type keyword validation
     } else if (type === 'array') {
-      return [(value, ref) => {
-        if (!isArray(value)) return '#type: value is not an array'
+      return [value => {
+        if (!Array.isArray(value)) return '#type: value is not an array'
       }]
     }
     return []
   }
 
-  static [ASSERT_CONTAINS] (contains) {
+  static ASSERT_CONTAINS (contains): void {
     if (!isSchema(contains)) {
       throw new TypeError('#contains: keyword should be a JSON Schema')
     }
   }
 
-  static [ASSERT_ITEMS] (schema) {
+  static ASSERT_ITEMS (schema): void {
     const { items, additionalItems } = schema
 
     // validate properties validations if keyword set

@@ -1,2 +1,2 @@
 // expose Schema
-module.exports = require('./dist/Schema')
+export { default as Schema } from './dist/Schema'

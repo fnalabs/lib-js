@@ -1,23 +1,24 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+import { ValidationFunc } from '../../types'
 import {
   OPTIMIZED, assertSizeMax, assertSizeMin,
-  isArray, isEnum, isObject, isSchema, isString, isTypedArray, isUndefined
+  isArray, isEnum, isObject, isInteger, isSchema, isString, isTypedArray, isUndefined
 } from '../types'
 
-// private methods
-const ASSERT_DEPENDENCIES = Symbol('valiates object dependencies')
-const ASSERT_KEYS = Symbol('validates object keys')
-const ASSERT_PROPERTIES = Symbol('validates object properties')
-const ASSERT_REQUIRED = Symbol('validates object required')
-
 export default class AssertObject {
-  constructor () {
-    return AssertObject
+  private static instance: AssertObject
+
+  private constructor () {}
+
+  static getInstance (): AssertObject {
+    if (isUndefined(AssertObject.instance)) AssertObject.instance = new AssertObject()
+    return AssertObject.instance
   }
 
   /*
    * object assertions
    */
-  static optimize (schema) {
+  optimize (schema): ValidationFunc[] {
     const {
       type, properties, patternProperties, additionalProperties, dependencies, required,
       maxProperties, minProperties, propertyNames
@@ -26,20 +27,20 @@ export default class AssertObject {
 
     // assert and optimize property-processing keywords in schema
     if (!isUndefined(properties) || !isUndefined(patternProperties) || !isUndefined(additionalProperties)) {
-      patternProps = AssertObject[ASSERT_PROPERTIES](schema)
+      patternProps = AssertObject.ASSERT_PROPERTIES(schema)
     }
-    if (!isUndefined(dependencies)) AssertObject[ASSERT_DEPENDENCIES](dependencies)
-    if (!isUndefined(propertyNames)) AssertObject[ASSERT_KEYS](propertyNames)
-    const req = AssertObject[ASSERT_REQUIRED](required)
+    if (!isUndefined(dependencies)) AssertObject.ASSERT_DEPENDENCIES(dependencies)
+    if (!isUndefined(propertyNames)) AssertObject.ASSERT_KEYS(propertyNames)
+    const req = AssertObject.ASSERT_REQUIRED(required)
 
     // assert and optimize post-processing keywords in schema
-    if (!isUndefined(maxProperties)) assertSizeMax(maxProperties, 'maxProperties')
-    if (!isUndefined(minProperties)) assertSizeMin(minProperties, 'minProperties')
+    if (isInteger(maxProperties)) assertSizeMax(maxProperties, 'maxProperties')
+    if (isInteger(minProperties)) assertSizeMin(minProperties, 'minProperties')
 
     // return validations based on defined keywords
-    if (properties || patternProperties || additionalProperties || additionalProperties === false || dependencies || propertyNames || propertyNames === false || (required && required.length)) {
+    if (properties || patternProperties || additionalProperties || additionalProperties === false || dependencies || propertyNames || propertyNames === false || required?.length) {
       return [(value, ref) => {
-        if (!isObject(value)) {
+        if (!(typeof value === 'object' && value !== null && !Array.isArray(value))) {
           if (ref.type === 'object') return '#type: value is not an object'
           return
         }
@@ -52,10 +53,10 @@ export default class AssertObject {
         let error
 
         // asserts [required, maxProperties, minProperties]
-        if (typeof ref.maxProperties === 'number' && index > ref.maxProperties) {
+        if (ref.maxProperties && index > ref.maxProperties) {
           return '#maxProperties: value maximum exceeded'
         }
-        if (typeof ref.minProperties === 'number' && index < ref.minProperties) {
+        if (ref.minProperties && index < ref.minProperties) {
           return '#minProperties: value minimum not met'
         }
 
@@ -97,7 +98,7 @@ export default class AssertObject {
           }
 
           // asserts [additionalProperties]
-          if ((ref.additionalProperties || ref.additionalProperties === false) && !(propertiesMatch || patternMatch)) {
+          if ((ref.additionalProperties || ref.additionalProperties === false) && !(propertiesMatch || patternMatch)) { // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
             if (ref.additionalProperties === false) {
               return '#additionalProperties: additional properties not allowed'
             } else if (ref.additionalProperties[OPTIMIZED]) {
@@ -109,7 +110,7 @@ export default class AssertObject {
           // asserts [dependencies]
           if (ref.dependencies && (ref.dependencies[keys[index]] || ref.dependencies[keys[index]] === false)) {
             if (Array.isArray(ref.dependencies[keys[index]])) {
-              let i = ref.dependencies[keys[index]].length
+              let i = (ref.dependencies[keys[index]] as []).length
               while (i--) {
                 if (typeof value[ref.dependencies[keys[index]][i]] === 'undefined') {
                   return `#dependencies: value does not have '${keys[index]}' dependency`
@@ -125,7 +126,7 @@ export default class AssertObject {
           }
 
           // asserts [propertyNames]
-          if (ref.propertyNames || ref.propertyNames === false) {
+          if (ref.propertyNames || ref.propertyNames === false) { // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
             if (ref.propertyNames === false) {
               return '#propertyNames: \'false\' JSON Schema invalidates all values'
             } else if (ref.propertyNames[OPTIMIZED]) {
@@ -141,48 +142,48 @@ export default class AssertObject {
         }
       }]
     // return validations based on defined keywords that require only object validation
-    } else if (maxProperties || minProperties) {
+    } else if (isInteger(maxProperties) || isInteger(minProperties)) {
       return [(value, ref) => {
-        if (!isObject(value)) {
+        if (!(typeof value === 'object' && value !== null && !Array.isArray(value))) {
           if (ref.type === 'object') return '#type: value is not an object'
           return
         }
         const length = Object.keys(value).length
-        if (typeof ref.maxProperties === 'number' && length > ref.maxProperties) {
+        if (ref.maxProperties && length > ref.maxProperties) {
           return '#maxProperties: value maximum exceeded'
         }
-        if (typeof ref.minProperties === 'number' && length < ref.minProperties) {
+        if (ref.minProperties && length < ref.minProperties) {
           return '#minProperties: value minimum not met'
         }
       }]
     // return validations based on only type keyword validation
     } else if (type === 'object') {
-      return [(value, ref) => {
-        if (!isObject(value)) return '#type: value is not an object'
+      return [value => {
+        if (!(typeof value === 'object' && value !== null && !Array.isArray(value))) return '#type: value is not an object'
       }]
     }
     return []
   }
 
-  static [ASSERT_DEPENDENCIES] (dependencies) {
+  static ASSERT_DEPENDENCIES (dependencies): void {
     // determine if dependencies object contains arrays or schemas
     const keys = Object.keys(dependencies)
     let index = keys.length
     while (index--) {
       const value = dependencies[keys[index]]
-      if (!((isArray(value) && !value.length) || isEnum(value, isString) || isSchema(value))) {
+      if (!((isArray(value) && value.length !== 0) || isEnum(value, isString) || isSchema(value))) {
         throw new TypeError('#dependencies: all dependencies must either be JSON Schemas|enums')
       }
     }
   }
 
-  static [ASSERT_KEYS] (propertyNames) {
+  static ASSERT_KEYS (propertyNames): void {
     if (!isSchema(propertyNames)) {
       throw new TypeError('#propertyNames: must be a JSON Schema')
     }
   }
 
-  static [ASSERT_PROPERTIES] (schema) {
+  static ASSERT_PROPERTIES (schema): object {
     const { properties, patternProperties, additionalProperties } = schema
     const patternProps = {}
 
@@ -210,7 +211,7 @@ export default class AssertObject {
     return patternProps
   }
 
-  static [ASSERT_REQUIRED] (list) {
+  static ASSERT_REQUIRED (list): object {
     if (isUndefined(list)) return {}
     if (!isArray(list) || !isTypedArray(list, isString)) {
       throw new TypeError('#required: required properties must be defined in an array of strings')
