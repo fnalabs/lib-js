@@ -1,12 +1,13 @@
-import { JSONSchema6 } from 'json-schema'
+import type { JSONSchema4, JSONSchema6Definition, JSONSchema7Definition } from 'json-schema'
+import type { Schema } from '../Schema'
 
-export interface JSONSchema extends JSONSchema6 {
-  id?: string
-}
-
-export type AssertionFunc = (value: any, referred?: JSONSchema) => boolean
-export type ValidationFunc = (data: any, schema: JSONSchema) => unknown
+export type JSONSchema = JSONSchema4 & JSONSchema6Definition & JSONSchema7Definition
+export type AssertionFunc = (value: unknown, referred?: Schema) => boolean
+export type ValidationFunc = (data: unknown, schema: Schema) => unknown
 export interface ValidationRef {
-  referred: JSONSchema
+  referred: Schema
   fn: ValidationFunc
+}
+export interface SchemaRefs {
+  [schemaUrl: string]: Schema
 }

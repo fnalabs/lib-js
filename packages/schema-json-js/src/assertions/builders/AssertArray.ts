@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { ValidationFunc } from '../../types'
+import { JSONSchema, ValidationFunc } from '../../types'
+import { Schema } from '../../Schema'
 import {
   OPTIMIZED, assertSizeMax, assertSizeMin,
   isArray, isBoolean, isObject, isSchema, isUndefined
@@ -18,7 +19,7 @@ export default class AssertArray {
   /*
    * array assertions
    */
-  optimize (schema): ValidationFunc[] {
+  optimize (schema: JSONSchema): ValidationFunc[] {
     const { type, items, additionalItems, contains, maxItems, minItems, uniqueItems } = schema
 
     // assert and optimize element-processing keywords in schema
@@ -26,12 +27,12 @@ export default class AssertArray {
     if (!isUndefined(contains)) AssertArray.ASSERT_CONTAINS(contains)
 
     // assert and optimize post-processing keywords in schema
-    if (!isUndefined(maxItems)) assertSizeMax(maxItems, 'maxItems')
-    if (!isUndefined(minItems)) assertSizeMin(minItems, 'minItems')
+    if (!isUndefined(maxItems)) assertSizeMax(maxItems as number, 'maxItems')
+    if (!isUndefined(minItems)) assertSizeMin(minItems as number, 'minItems')
 
     // return validations based on defined keywords that require iterative validation
-    if (items || items === false || additionalItems || contains || contains === false || uniqueItems) {
-      return [(value, ref) => {
+    if (items === false || contains === false || items || additionalItems || contains || uniqueItems) {
+      return [(value: unknown, ref: Schema) => {
         if (!Array.isArray(value)) {
           if (ref.type === 'array') return '#type: value is not an array'
           return
@@ -114,7 +115,7 @@ export default class AssertArray {
       }]
     // return validations based on defined keywords that require only array validation
     } else if (maxItems || minItems) {
-      return [(value, ref) => {
+      return [(value: unknown, ref: Schema) => {
         if (!Array.isArray(value)) {
           if (ref.type === 'array') return '#type: value is not an array'
           return
@@ -128,7 +129,7 @@ export default class AssertArray {
       }]
     // return validations based on only type keyword validation
     } else if (type === 'array') {
-      return [value => {
+      return [(value: unknown) => {
         if (!Array.isArray(value)) return '#type: value is not an array'
       }]
     }

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 // imports
-import { JSONSchema, ValidationFunc, ValidationRef } from './@types'
+import type { JSONSchema4, JSONSchema6, JSONSchema7 } from 'json-schema'
+import type { JSONSchema, ValidationFunc, ValidationRef, SchemaRefs } from './types'
+
 import * as builders from './assertions/builders'
 import {
   OPTIMIZED,
@@ -26,12 +28,14 @@ const tildeOneRegex = /~1/g
  * @param {Object} [refs] - Optional hash of cached JSON Schemas that are referenced in the main schema.
  * @async
  */
-class Schema {
-  constructor (_schema?: object|boolean, _refs?: object) {
-    Object.defineProperties(this, {
-      [ERRORS]: { value: [] },
-      [REFS]: { value: {} }
-    })
+export class Schema<T = JSONSchema4 | JSONSchema6 | JSONSchema7> {
+  private [ERRORS]: string[]
+  private [REFS]: SchemaRefs
+  private [OPTIMIZED]?: ValidationFunc
+
+  constructor (_schema?: object|boolean, _refs?: SchemaRefs) {
+    this[ERRORS] = []
+    this[REFS] = {}
   }
 
   get errors (): string[] {
@@ -45,8 +49,8 @@ class Schema {
    * @returns {Schema} The instance of the JSON Schema definition.
    * @async
    */
-  async assign (schema: JSONSchema, refs?: object): Promise<Schema> {
-    if (isObject(refs)) await this.ASSIGN_REFS(refs as object)
+  async assign (schema: JSONSchema, refs?: SchemaRefs): Promise<Schema> {
+    if (isObject(refs)) await this.ASSIGN_REFS(refs as SchemaRefs)
 
     this.ASSIGN_SCHEMA(this, schema)
 
@@ -66,7 +70,7 @@ class Schema {
    * @returns {Schema} The instance of the JSON Schema definition.
    * @async
    */
-  async validate (data, schema: object | boolean = this): Promise<boolean> {
+  async validate (data: unknown, schema: Schema | boolean = this): Promise<boolean> {
     return this.VALIDATE(data, schema)
   }
 
@@ -76,7 +80,7 @@ class Schema {
    * @param {Schema} [schema=this] - Optionally pass nested JSON Schema definitions of the instance for partial schema validation or other instances of the JSON Schema class.
    * @returns {Schema} The instance of the JSON Schema definition.
    */
-  validateSync (data, schema: object | boolean = this): boolean {
+  validateSync (data: unknown, schema: Schema | boolean = this): boolean {
     return this.VALIDATE(data, schema)
   }
 
@@ -88,7 +92,7 @@ class Schema {
    * @returns {Boolean} <code>true</code> if validation is successful, otherwise <code>false</code>.
    * @private
    */
-  private VALIDATE (data, schema: object|boolean = this): boolean {
+  private VALIDATE (data: unknown, schema: Schema | boolean = this): boolean {
     this[ERRORS].length = 0
 
     if (schema === false) this[ERRORS].push('\'false\' JSON Schema invalidates all values')
@@ -102,15 +106,15 @@ class Schema {
 
   /**
    * Iteratively assigns the provided JSON Schema definition to the root of the instance JSON Schema object.
-   * @param {this} root - The root of the instance JSON Schema object.
+   * @param {Schema} root - The root of the instance JSON Schema object.
    * @param {JSONSchema} schema - The JSON Schema definition about to be assigned.
    * @private
    */
-  private ASSIGN_SCHEMA (root, schema: JSONSchema): void {
+  private ASSIGN_SCHEMA (root: Schema, schema: JSONSchema): void {
     if (!isObject(schema)) throw new TypeError('JSON Schemas must be an object at root')
 
     // iterate over object/array passed as source schema
-    const assign = (object, source: JSONSchema, path: string[] = []): void => {
+    const assign = (object: Schema | object, source: JSONSchema, path: string[] = []): Schema | object => {
       const keys = Object.keys(source)
       let index = keys.length
       while (index--) {
@@ -141,7 +145,7 @@ class Schema {
    * @param {JSONSchema} ref - A valid JSON Schema.
    * @private
    */
-  private async ASSIGN_REF (schemaUrl: string, ref: JSONSchema): Promise<void> {
+  private async ASSIGN_REF (schemaUrl: string, ref: JSONSchema): Promise<Readonly<Schema>> {
     Object.defineProperty(this[REFS], schemaUrl, { value: {}, enumerable })
     this.ASSIGN_SCHEMA(this[REFS][schemaUrl], ref)
     return await this.ASSIGN_OPTIMIZED(this[REFS][schemaUrl])
@@ -152,7 +156,7 @@ class Schema {
    * @param {Object} refs - An object literal containing the schemaUrl and matching JSON Schemas for all refs.
    * @private
    */
-  private async ASSIGN_REFS (refs: object): Promise<void> {
+  private async ASSIGN_REFS (refs: SchemaRefs): Promise<void> {
     const keys = Object.keys(refs)
     let index = keys.length
     while (index--) await this.ASSIGN_REF(keys[index], refs[keys[index]])
@@ -163,10 +167,10 @@ class Schema {
    * @param {Object} schema - A valid JSON Schema instance.
    * @private
    */
-  private async ASSIGN_OPTIMIZED (schema): Promise<void> {
+  private async ASSIGN_OPTIMIZED (schema: Schema): Promise<Readonly<Schema>> {
     const schemaId = schema.$id ?? schema.id
 
-    const assign = async (source, path: string[] = []): Promise<void> => {
+    const assign = async (source: Schema, path: string[] = []): Promise<Readonly<Schema>> => {
       if (isObject(source) && !isParentKeyword(path)) {
         const { $id, $ref, id } = source
         const list: ValidationFunc[] = []
@@ -213,7 +217,7 @@ class Schema {
   /*
    * ref assertions
    */
-  private async ASSERT_REF ($ref: string, root: JSONSchema, path: string[]): Promise<ValidationFunc[]> {
+  private async ASSERT_REF ($ref: string, root: Schema, path: string[]): Promise<ValidationFunc[]> {
     if (!isString($ref)) throw new TypeError('#$ref: must be a string')
     if (isPathFragment($ref)) return []
 
@@ -229,7 +233,7 @@ class Schema {
     const { referred, fn } = assertion
     if (fn && isObject(referred)) {
       return [value => fn(value, referred)]
-    } else if (referred === false) {
+    } else if (!referred) {
       return [() => 'a \'false\' JSON Schema invalidates all values']
     }
     return []
@@ -253,7 +257,7 @@ class Schema {
     return { referred, fn }
   }
 
-  private async ASSERT_REF_RELATIVE (match: string[], root: JSONSchema, path: string[]): Promise<ValidationRef> {
+  private async ASSERT_REF_RELATIVE (match: string[], root: Schema, path: string[]): Promise<ValidationRef> {
     let absMatch: string[] = []
     if (isString(root.$id)) absMatch = isRef(root.$id as string)
     else if (isString(root.id)) absMatch = isRef(root.id as string)
@@ -273,9 +277,9 @@ class Schema {
     return await this.ASSERT_REF_ABSOLUTE(absMatch)
   }
 
-  private ASSERT_REF_POINTER (pointer: string, root: JSONSchema): ValidationRef {
+  private ASSERT_REF_POINTER (pointer: string, root: Schema): ValidationRef {
     // recursive traversal of root in case of recursive references
-    const traverse = (ptr: string): JSONSchema => {
+    const traverse = (ptr: string): Schema => {
       const keys: string[] = ptr.split('/')
       let ref = root
 
@@ -299,7 +303,7 @@ class Schema {
   /*
    * schema assertions
    */
-  private ASSERT_SCHEMA (schema: JSONSchema): ValidationFunc {
+  private ASSERT_SCHEMA (schema: Schema): ValidationFunc {
     const list: ValidationFunc[] = []
 
     // assert schema type
@@ -337,7 +341,7 @@ class Schema {
   /*
    * type assertions
    */
-  private ASSERT_TYPE (schema: JSONSchema): ValidationFunc[] {
+  private ASSERT_TYPE (schema: Schema): ValidationFunc[] {
     const { type } = schema
 
     // assert schema type
@@ -345,7 +349,7 @@ class Schema {
       if (!isSchemaType(type)) throw new ReferenceError(`#type: '${type as string}' is not a valid JSON Schema type`)
       return []
     } else if (isArray(type)) {
-      if (!isEnum(type as [], isSchemaType)) throw new TypeError('#type: type arrays must contain only string')
+      if (!isEnum(type as unknown[], isSchemaType)) throw new TypeError('#type: type arrays must contain only string')
 
       const list = (type as []).map(val => this.ASSERT_SCHEMA({ type: val }))
       return [(value, ref) => {
@@ -358,7 +362,7 @@ class Schema {
 }
 
 /*
- * Proxy<Schema> for async initialization of the schema and optional refs
+ * Proxy<Schema<T>> for async initialization of the schema and optional refs
  */
 export default new Proxy(Schema, {
   construct: async function (Schema, argsList) {

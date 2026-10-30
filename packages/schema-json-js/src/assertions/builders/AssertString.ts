@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+import { ValidationFunc } from '../../types'
 import { assertSizeMax, assertSizeMin, isInteger, isString, isUndefined } from '../types'
 
 const isEmailRegex = /^[^@]+@[^@]+\.[^@]+$/
@@ -10,11 +12,7 @@ const isUriRefRegex = /^(?:[A-Za-z][A-Za-z0-9+\-.]*:(?:\/\/(?:(?:[A-Za-z0-9\-._~
 const isUriTplRegex = /^(?:(?:[^\x00-\x20"'<>%\\^`{|}]|%[0-9a-f]{2})|\{[+#./;?&=,!@|]?(?:[a-z0-9_]|%[0-9a-f]{2})+(?::[1-9][0-9]{0,3}|\*)?(?:,(?:[a-z0-9_]|%[0-9a-f]{2})+(?::[1-9][0-9]{0,3}|\*)?)*\})*$/i // eslint-disable-line no-control-regex
 const isJsonPtrRegex = /^$|^\/(?:~(?=[01])|[^~])*$/i
 
-// private methods
-const ASSERT_FORMAT = Symbol('validates string format')
-const ASSERT_PATTERN = Symbol('validates string pattern')
-
-function stringLength (str) {
+function stringLength (str: string): number {
   let length = 0
   for (let i = 0, len = str.length; i < len; i++) {
     const currChar = str.charCodeAt(i)
@@ -26,28 +24,34 @@ function stringLength (str) {
 }
 
 export default class AssertString {
-  constructor () {
-    return AssertString
+  private static instance: AssertString
+
+  private constructor () {}
+
+  static getInstance (): AssertString {
+    if (isUndefined(AssertString.instance)) AssertString.instance = new AssertString()
+    return AssertString.instance
   }
 
   /*
    * string assertions
    */
-  static optimize (schema) {
+  optimize (schema): ValidationFunc[] {
     const { type, format, maxLength, minLength, pattern } = schema
-    let assertFormat
-    let patternRegExp
-
-    // perform remaining validations defined in schema
-    if (!isUndefined(format)) assertFormat = AssertString[ASSERT_FORMAT](format, type)
-    if (!isUndefined(maxLength)) assertSizeMax(maxLength, 'maxLength')
-    if (!isUndefined(minLength)) assertSizeMin(minLength, 'minLength')
-    if (!isUndefined(pattern)) patternRegExp = AssertString[ASSERT_PATTERN](pattern, type)
 
     // return validations based on defined keywords
-    if (assertFormat || patternRegExp || isInteger(maxLength) || isInteger(minLength)) {
+    if (!isUndefined(format) || !isUndefined(pattern) || isInteger(maxLength) || isInteger(minLength)) {
+      let assertFormat
+      let patternRegExp: RegExp
+
+      // perform remaining validations defined in schema
+      if (!isUndefined(format)) assertFormat = AssertString.ASSERT_FORMAT(format)
+      if (!isUndefined(maxLength)) assertSizeMax(maxLength, 'maxLength')
+      if (!isUndefined(minLength)) assertSizeMin(minLength, 'minLength')
+      if (!isUndefined(pattern)) patternRegExp = AssertString.ASSERT_PATTERN(pattern)
+
       return [(value, ref) => {
-        if (!isString(value)) {
+        if (typeof value !== 'string') {
           if (ref.type === 'string') return '#type: value is not a string'
           return
         }
@@ -56,25 +60,25 @@ export default class AssertString {
           const error = assertFormat(value)
           if (error) return error
         }
-        if (typeof ref.maxLength === 'number' && !(value.length <= ref.maxLength || stringLength(value) <= ref.maxLength)) {
+        if (ref.maxLength && !(value.length <= ref.maxLength || stringLength(value) <= ref.maxLength)) {
           return '#maxLength: value maximum exceeded'
         }
-        if (typeof ref.minLength === 'number' && (value.length < ref.minLength || stringLength(value) < ref.minLength)) {
+        if (ref.minLength && (value.length < ref.minLength || stringLength(value) < ref.minLength)) {
           return '#minLength: value minimum not met'
         }
-        if (patternRegExp && !patternRegExp.test(value)) {
-          return `#pattern: value does not match pattern '${ref.pattern}'`
+        if (patternRegExp && patternRegExp.test(value) === false) {
+          return `#pattern: value does not match pattern '${ref.pattern}'` // eslint-disable-line @typescript-eslint/restrict-template-expressions
         }
       }]
     } else if (type === 'string') {
-      return [(value, ref) => {
-        if (!isString(value)) return '#type: value is not a string'
+      return [value => {
+        if (typeof value !== 'string') return '#type: value is not a string'
       }]
     }
     return []
   }
 
-  static [ASSERT_FORMAT] (format) {
+  static ASSERT_FORMAT (format: string): ValidationFunc {
     if (!isString(format)) {
       throw new TypeError('#format: keyword is not a string')
     }
@@ -82,60 +86,60 @@ export default class AssertString {
     // determine the desired format to valiate
     switch (format) {
       case 'date-time':
-        return (value, ref) => {
-          if (isNaN(Date.parse(value)) || ~value.indexOf('/')) {
+        return value => {
+          if (isNaN(Date.parse(value)) || value.includes('/')) {
             return '#format: value does not match "date-time" format'
           }
         }
       case 'email':
-        return (value, ref) => {
+        return value => {
           if (!isEmailRegex.test(value)) {
             return '#format: value does not match "email" format'
           }
         }
       case 'hostname':
-        return (value, ref) => {
+        return value => {
           if (value.length > 255 || !isHostnameRegex.test(value)) {
             return '#format: value does not match "hostname" format'
           }
         }
       case 'ipv4':
-        return (value, ref) => {
+        return value => {
           if (!isIpv4Regex.test(value) || value.split('.')[3] > 255) {
             return '#format: value does not match "ipv4" format'
           }
         }
       case 'ipv6':
-        return (value, ref) => {
+        return value => {
           if (!isIpv6Regex.test(value)) {
             return '#format: value does not match "ipv6" format'
           }
         }
       case 'regex':
-        return (value, ref) => {
+        return value => {
           if (isRegex.test(value)) return '#format: ECMA 262 has no support for \\Z anchor from .NET'
           try { new RegExp(value) } catch (e) { return '#format: value is not a valid "regex" format' } // eslint-disable-line no-new
         }
       case 'uri':
-        return (value, ref) => {
+        return value => {
           if (!isUriRegex.test(value)) {
             return '#format: value does not match "uri" format'
           }
         }
       case 'uri-reference':
-        return (value, ref) => {
+        return value => {
           if (!isUriRefRegex.test(value)) {
             return '#format: value does not match "uri-reference" format'
           }
         }
       case 'uri-template':
-        return (value, ref) => {
+        return value => {
           if (!isUriTplRegex.test(value)) {
             return '#format: value does not match "uri-template" format'
           }
         }
       case 'json-pointer':
-        return (value, ref) => {
+        return value => {
           if (!isJsonPtrRegex.test(value)) {
             return '#format: value does not match "json-pointer" format'
           }
@@ -145,7 +149,7 @@ export default class AssertString {
     }
   }
 
-  static [ASSERT_PATTERN] (pattern) {
+  static ASSERT_PATTERN (pattern): RegExp {
     if (!isString(pattern)) {
       throw new TypeError('#pattern: keyword is not a string')
     }

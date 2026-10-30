@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+import { JSONSchema } from '../../types'
 import { isArray, isBoolean, isObject } from './primitive'
 
 const isGenericKeyRegex = /^(?:const|enum)$/
@@ -8,7 +10,7 @@ const isUrlRegex = /^(?:((?:(http|https):\/\/)(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0
 /*
  * complex type assertions
  */
-export function deepEqual (value, control) {
+export function deepEqual (value: any, control: any): boolean {
   if (isArray(control)) {
     if (!isArray(value)) return false
     if (value.length !== control.length) return false
@@ -17,7 +19,7 @@ export function deepEqual (value, control) {
     while (i--) {
       if (!deepEqual(value[i], control[i])) return false
     }
-  } else if (control && typeof control === 'object') {
+  } else if (typeof control === 'object' && control !== null) {
     if (!isObject(value)) return false
 
     const keys = Object.keys(control)
@@ -32,8 +34,8 @@ export function deepEqual (value, control) {
   return true
 }
 
-export function isEnum (value, assertion) {
-  if (!isArray(value) || !value.length) return false
+export function isEnum (value: unknown[], assertion?: (value: unknown) => boolean): boolean {
+  if (!isArray(value) || value.length === 0) return false
 
   const enumSet = new Set()
   let index = value.length
@@ -44,16 +46,16 @@ export function isEnum (value, assertion) {
   }
   if (value.length !== enumSet.size) return false
 
-  if (assertion) {
+  if (assertion !== undefined) {
     let i = value.length
     while (i--) {
-      if (!assertion(value[i])) return false
+      if (!assertion(value[i] as unknown)) return false
     }
   }
   return true
 }
 
-export function isParentKeyword (parents) {
+export function isParentKeyword (parents: string[]): boolean {
   const len = parents.length
 
   let check = false
@@ -67,29 +69,31 @@ export function isParentKeyword (parents) {
   return check
 }
 
-export function isPathFragment ($ref) {
+export function isPathFragment ($ref: string): boolean {
   return $ref[$ref.length - 1] === '/'
 }
 
-export function isRef (ref) {
-  return isUrlRegex.exec(decodeURI(ref))
+export function isRef (ref: string): string[] {
+  return isUrlRegex.exec(decodeURI(ref)) ?? []
 }
 
-export function isSchema (schema) {
+export function isSchema (schema: JSONSchema|boolean): boolean {
   return isObject(schema) || isBoolean(schema)
 }
 
-export function isSchemaType (type) {
+export function isSchemaType (type: string): boolean {
   return isSchemaTypeRegex.test(type)
 }
 
-export function isSubSchema ($id, path) {
+export function isSubSchema ($id: string, path: string[]): boolean {
   const match = isRef($id)
-  return isArray(match) && match[1] && match[2] && path[path.length - 2] === 'definitions'
+  return isArray(match) && typeof match[1] === 'string' && typeof match[2] === 'string' && path[path.length - 2] === 'definitions'
 }
 
-export function isTypedArray (value, assertion) {
+export function isTypedArray (value: unknown[], assertion: (value: unknown) => boolean): boolean {
   let index = value.length
-  while (index--) if (!assertion(value[index])) return false
+  while (index--) {
+    if (!assertion(value[index])) return false
+  }
   return true
 }
